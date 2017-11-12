@@ -1,17 +1,5 @@
 /*
 
--Get all elements that require being sliders.
-
--For each of those elements, create a new instance of Slider() and passin in each node reference.
-
--a Slider() passes in it's parental container as a reference.
-    - It also has prototype functions for:
-        -Starting itself
-        -Next and Previous Slides
-        -Creating its Markup based on passed in parent, tieing other function calls in for arrrows, etc (destoy old <img>s)
-        -
-
-
 */
 
 var slider = (function(){
@@ -25,18 +13,26 @@ var slider = (function(){
         function Slider(element){
             
             var _ = this;
+            console.log(_);
+            var elImgs = element.children;
+            var slidesWrapper = document.createElement('div');
+            slidesWrapper.className = 'slider-wrapper';
 
             _.settings = {
                 activated: false,
                 speed: 3000,
                 parentElement: element,
-                allSlides: element.children,
+                slidesWrapperElement: slidesWrapper,
+                nextArrow: null,
+                prevArrow: null,
+                allSlides: null,
                 currentSlideIndex: 0,
                 timer: null
             };
             
             //think about building a prototype init function to add these
-            _.buildSlides(element.children);
+            _.buildSlides(elImgs);
+            _.buildArrows();
             _.autoPlay();
         }
         
@@ -89,9 +85,9 @@ var slider = (function(){
         
     }
     
-    Slider.prototype.nextSlide = function() {
-        var _ = this;
-        
+    Slider.prototype.nextSlide = function(instance) {
+        var _ = instance;
+        console.log('testing next slide'); //SCB
         _.autoPlayClear();
         
         //Remove siblings' style attribute
@@ -129,6 +125,8 @@ var slider = (function(){
         var _ = this;
         var i;
         var slides = '';
+        
+        
 
         for(i=0;i < images.length;i++) {
             
@@ -145,12 +143,44 @@ var slider = (function(){
   
         }
         
-        //Append new HTML content to parent
-        _.settings.parentElement.innerHTML = slides;
+        //Clean out Images
+        _.settings.parentElement.innerHTML = '';
+        
+        //Append new HTML content to parent and establish allSlides
+        _.settings.slidesWrapperElement.innerHTML = slides;
+        _.settings.allSlides = _.settings.slidesWrapperElement.children;
+        _.settings.parentElement.appendChild(_.settings.slidesWrapperElement);
+        
         
         //Activate first slide and set currentSlideIndex to first slide
         _.settings.allSlides[_.settings.currentSlideIndex].setAttribute("style", "display:block; z-index:1;");
         
+    }
+    
+    Slider.prototype.buildArrows = function() {
+        
+        var _ = this;
+        var parentElement = _.settings.parentElement;
+        
+        //Create Next Button
+        var nextButton = document.createElement('div');
+        nextButton.className = 'slider-nextBtn';
+        parentElement.appendChild(nextButton);
+        
+        //Set next button in settings
+        _.settings.nextArrow = nextButton;
+        
+        //CreatePrevious Button
+        var previousButton = document.createElement('div');
+        previousButton.className = 'slider-prevBtn';
+        parentElement.appendChild(previousButton);
+        
+        //Set previous button in settings
+        _.settings.prevArrow = previousButton;
+        
+        //Set EventListeners
+        //_.settings.prevArrow.addEventListener();
+        _.settings.nextArrow.addEventListener('click', function(){_.nextSlide(_)});
     }
     
     //Load CSS
