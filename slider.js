@@ -56,6 +56,30 @@ var slider = (function(){
         //Remove siblings' style attribute
          _.removeSiblingAttr();
         
+        //Infinite Scroll Behavior
+        _.infiniteScroll();
+    }
+    
+    Slider.prototype.nextSlide = function(instance) {
+        var _ = instance;
+        
+        //Clear timer Interval
+        _.autoPlayClear();
+        
+        //Remove siblings' style attribute
+         _.removeSiblingAttr();
+        
+        //Infinite Scroll Behavior
+        _.infiniteScroll();
+        
+        //Reset Interval
+        _.settings.timer = setInterval(function(){_.iterateSlides(_)}, _.settings.speed);
+    }
+    
+    Slider.prototype.infiniteScroll = function() {
+        
+        var _ = this;
+        
         if(_.settings.allSlides[_.settings.currentSlideIndex].nextElementSibling == null) {
             
             //Reset slide index
@@ -72,7 +96,7 @@ var slider = (function(){
             //Make the next sibling element visible
             _.settings.allSlides[_.settings.currentSlideIndex].setAttribute("style", "display:block; z-index:1;");
             
-        }
+        }        
     }
     
     Slider.prototype.removeSiblingAttr = function() {
@@ -83,33 +107,6 @@ var slider = (function(){
             _.settings.allSlides[i].removeAttribute('style');
         }
         
-    }
-    
-    Slider.prototype.nextSlide = function(instance) {
-        var _ = instance;
-        console.log('testing next slide'); //SCB
-        _.autoPlayClear();
-        
-        //Remove siblings' style attribute
-         _.removeSiblingAttr();
-        
-        if(_.settings.allSlides[_.settings.currentSlideIndex].nextElementSibling == null) {
-            
-            //Reset slide index
-            _.settings.currentSlideIndex = 0;
-            
-            //Make the reset index element visible
-            _.settings.allSlides[_.settings.currentSlideIndex].setAttribute("style", "display:block; z-index:1;");
-            
-        } else {
-            
-            //Set Slide index to next slide
-            _.settings.currentSlideIndex = ++_.settings.currentSlideIndex;
-
-            //Make the next sibling element visible
-            _.settings.allSlides[_.settings.currentSlideIndex].setAttribute("style", "display:block; z-index:1;");
-            
-        }
     }
     
     Slider.prototype.autoPlayClear = function() {
